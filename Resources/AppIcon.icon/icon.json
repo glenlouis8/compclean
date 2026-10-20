@@ -1,0 +1,85 @@
+{
+  "groups": [
+    {
+      "layers": [
+        {
+          "image-name": "layer-0.svg",
+          "name": "layer-0",
+          "glass": true,
+          "position": {
+            "scale": 1.75,
+            "translation-in-points": [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "image-name": "layer-1.svg",
+          "name": "layer-1",
+          "glass": true,
+          "position": {
+            "scale": 1.75,
+            "translation-in-points": [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "image-name": "layer-2.svg",
+          "name": "layer-2",
+          "glass": true,
+          "position": {
+            "scale": 1.75,
+            "translation-in-points": [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "image-name": "layer-3.svg",
+          "name": "layer-3",
+          "glass": true,
+          "position": {
+            "scale": 1.75,
+            "translation-in-points": [
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "name": "Foreground",
+      "specular": true,
+      "shadow": {
+        "kind": "layer-color",
+        "opacity": 0.5
+      },
+      "blur-material": null
+    }
+  ],
+  "supported-platforms": {
+    "squares": "shared",
+    "circles": [
+      "watchOS"
+    ]
+  },
+  "fill": {
+    "linear-gradient": [
+      "srgb:0.96078,0.54510,0.74510,1.00000",
+      "srgb:0.47843,0.30196,0.94902,1.00000"
+    ],
+    "orientation": {
+      "start": {
+        "x": 0.9330127018922193,
+        "y": 0.75
+      },
+      "stop": {
+        "x": 0.0669872981077807,
+        "y": 0.24999999999999994
+      }
+    }
+  }
+}
