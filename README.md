@@ -4,6 +4,17 @@ A macOS storage cleaner and complete app uninstaller that explains every file be
 
 Built for macOS 26 (Tahoe) and later with SwiftUI and Liquid Glass.
 
+## Download
+
+**[Download the latest CompClean.dmg](https://github.com/glenlouis8/compclean/releases/latest)** (macOS 26+, Apple silicon)
+
+1. Open the `.dmg` and drag **CompClean** into **Applications**.
+2. Open CompClean. macOS will say it *"could not verify CompClean is free of malware"*. This happens because the app isn't signed with a paid Apple Developer account, not because anything was found.
+3. Go to **System Settings → Privacy & Security**, scroll down, and click **Open Anyway** next to CompClean. You only have to do this once.
+4. Give it **Full Disk Access** when it asks (System Settings → Privacy & Security → Full Disk Access) so it can see every cache and leftover.
+
+Prefer not to run a downloaded app? [Build it yourself](#build-and-run) from the source in this repo instead.
+
 ## What it does
 
 **Clean**
@@ -52,7 +63,7 @@ cd compclean
 open CompClean.app
 ```
 
-`scripts/bundle.sh` builds a release binary, wraps it into `CompClean.app`, compiles the Liquid Glass icon, and signs the app ad hoc for local use.
+`scripts/bundle.sh` builds a release binary, wraps it into `CompClean.app`, compiles the Liquid Glass icon, and signs the app ad hoc for local use. `scripts/make-dmg.sh` does the same and packs the app into `build/CompClean-<version>.dmg` for a release.
 
 Run the tests:
 
