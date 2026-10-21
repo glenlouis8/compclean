@@ -5,3 +5,4 @@ build/
 .DS_Store
 CLAUDE.md
 *.dmg
+docs/images/raw/

@@ -1,6 +1,25 @@
-# CompClean
+<p align="center">
+  <img src="docs/images/icon.png" width="128" alt="CompClean icon">
+</p>
 
-A macOS storage cleaner and complete app uninstaller that explains every file before it touches anything.
+<h1 align="center">CompClean</h1>
+
+<p align="center">
+  A macOS storage cleaner and complete app uninstaller that explains every file before it touches anything.
+</p>
+
+<p align="center">
+  <a href="https://github.com/glenlouis8/compclean/releases/latest"><b>Download</b></a> ·
+  <a href="#why-you-can-trust-it">Why you can trust it</a> ·
+  <a href="#build-and-run">Build it yourself</a>
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="docs/images/cleaner-light.png">
+    <img src="docs/images/cleaner.png" width="560" alt="CompClean's Cleaner screen: a ring showing 4.48 GB of caches that can go, with a card for each kind">
+  </picture>
+</p>
 
 Built for macOS 26 (Tahoe) and later with SwiftUI and Liquid Glass. Free and open source, with no subscriptions, accounts, upsells or tracking.
 
@@ -43,6 +62,25 @@ Prefer not to run a downloaded app? [Build it yourself](#build-and-run) from the
 
 **History**
 - Every clean and uninstall is recorded. Anything still in the Trash can be **put back** to its original place.
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/uninstaller.png" alt="Uninstaller showing Obsidian and every file it left in your Library"></td>
+    <td width="50%"><img src="docs/images/leftovers.png" alt="Leftovers from apps that are no longer installed, each with a plain explanation"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Uninstaller</b>: the app and every file it left around</td>
+    <td align="center"><b>Leftovers</b>: what deleted apps left behind</td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/diskmap.png" alt="Disk map of the home folder as colored tiles sized by space used"></td>
+    <td width="50%"><img src="docs/images/cleaner-light.png" alt="The Cleaner screen in light mode"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Disk map</b>: see what takes up space</td>
+    <td align="center"><b>Light mode</b>, or follow your Mac</td>
+  </tr>
+</table>
 
 **On-device AI (optional)**
 - **Ask about any item**, for example *"What is this?"* or *"Will I lose anything?"*, and get a plain-English answer.
@@ -118,6 +156,8 @@ scripts/                  Build script and icon geometry
 ```
 
 The icon is drawn from plain geometry in `scripts/icon_glyphs.py` and turned into a Liquid Glass icon with [icon-composer-mcp](https://github.com/ethbak/icon-composer-mcp).
+
+The screenshots are Xcode previews in `Sources/CompCleanUI/ReadmeShots.swift`, filled with made-up sample data, so they never show anyone's real files. `swift scripts/frame-shots.swift` puts them on the gradient.
 
 ## License
 

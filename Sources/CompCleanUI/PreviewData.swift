@@ -78,9 +78,9 @@ enum PreviewData {
                        group: "\(app) (not installed)", preselected: true, purpose: .uninstall)
         }
         store.items = [
-            item("Library/Application Support/com.macpaw.CleanMyMac", 182_000_000, "CleanMyMac", "app data", days: 400),
-            item("Library/Caches/com.macpaw.CleanMyMac", 41_000_000, "CleanMyMac", "cache", days: 400),
-            item("Library/Preferences/com.macpaw.CleanMyMac.plist", 8_000, "CleanMyMac", "settings", days: 400),
+            item("Library/Application Support/com.spotify.client", 182_000_000, "Spotify", "app data", days: 400),
+            item("Library/Caches/com.spotify.client", 41_000_000, "Spotify", "cache", days: 400),
+            item("Library/Preferences/com.spotify.client.plist", 8_000, "Spotify", "settings", days: 400),
             item("Library/Group Containers/6N38VWS5BX.ru.keepcoder.Telegram", 96_000_000, "Telegram", "shared data", days: 210),
             item("Library/Containers/com.adguard.safari.AdGuard", 33_000, "AdGuard", "sandbox data", days: 500),
         ]
