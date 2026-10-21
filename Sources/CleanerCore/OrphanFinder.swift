@@ -31,7 +31,7 @@ public struct OrphanFinder: Sendable {
     ]
 
     /// Prefixes that belong to tools without an app bundle, so "no app installed" means nothing.
-    static let toolPrefixes = ["homebrew.", "org.homebrew", "com.glenlouis.compclean", "local.", "org.nixos",
+    static let toolPrefixes = ["homebrew.", "org.homebrew", "com.glenlouis.suds", "local.", "org.nixos",
                                "org.macports", "org.swift.", "org.llvm.", "com.docker.cli"]
 
     /// macOS parts that use old, non-"com.apple" names. Never treated as leftovers (SafetyPolicy refuses them too).

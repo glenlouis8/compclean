@@ -1,4 +1,4 @@
-"""Draws CompClean's icon glyphs as plain SVG geometry (no third-party symbols).
+"""Draws the Suds icon glyphs as plain SVG geometry (no third-party symbols).
 
 Usage: python3 scripts/icon_glyphs.py <out_dir>
 Writes one SVG per concept. Each <path> becomes its own Liquid Glass layer.

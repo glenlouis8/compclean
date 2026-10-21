@@ -8,7 +8,7 @@ final class FakeHome {
     let fm = FileManager.default
 
     init() throws {
-        url = fm.temporaryDirectory.appendingPathComponent("compclean-\(UUID().uuidString)/home")
+        url = fm.temporaryDirectory.appendingPathComponent("suds-\(UUID().uuidString)/home")
         try fm.createDirectory(at: url, withIntermediateDirectories: true)
     }
 

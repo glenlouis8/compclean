@@ -1,5 +1,5 @@
 #!/bin/bash
-# Builds CompClean.app in the project folder.
+# Builds Suds.app in the project folder.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -8,13 +8,13 @@ if [ -d /Applications/Xcode.app ]; then
   export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 fi
 
-swift build -c release --product CompClean
-BIN="$(swift build -c release --show-bin-path)/CompClean"
+swift build -c release --product Suds
+BIN="$(swift build -c release --show-bin-path)/Suds"
 
-APP=CompClean.app
+APP=Suds.app
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN" "$APP/Contents/MacOS/CompClean"
+cp "$BIN" "$APP/Contents/MacOS/Suds"
 
 # Liquid Glass icon (Resources/AppIcon.icon, made with icon-composer-mcp from scripts/icon_glyphs.py).
 # actool writes Assets.car for macOS 26+ plus an AppIcon.icns fallback.
@@ -27,10 +27,10 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>CFBundleName</key><string>CompClean</string>
-  <key>CFBundleDisplayName</key><string>CompClean</string>
-  <key>CFBundleIdentifier</key><string>com.glenlouis.compclean</string>
-  <key>CFBundleExecutable</key><string>CompClean</string>
+  <key>CFBundleName</key><string>Suds</string>
+  <key>CFBundleDisplayName</key><string>Suds</string>
+  <key>CFBundleIdentifier</key><string>com.glenlouis.suds</string>
+  <key>CFBundleExecutable</key><string>Suds</string>
   <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>CFBundleIconName</key><string>AppIcon</string>
   <key>CFBundlePackageType</key><string>APPL</string>

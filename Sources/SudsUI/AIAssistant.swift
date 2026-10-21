@@ -2,7 +2,7 @@ import CleanerCore
 import FoundationModels
 import SwiftUI
 
-/// Apple's on-device model, used only to explain what CompClean already decided.
+/// Apple's on-device model, used only to explain what Suds already decided.
 /// Nothing leaves the Mac, and nothing it says changes what gets selected or removed.
 @MainActor
 final class AIAssistant: ObservableObject {
@@ -129,7 +129,7 @@ struct AskPanel: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(failure ?? answer).font(.callout).fixedSize(horizontal: false, vertical: true)
                         .textSelection(.enabled)
-                    Label("AI explanation, written on this Mac. CompClean's safety label is what counts.",
+                    Label("AI explanation, written on this Mac. The app's safety label is what counts.",
                           systemImage: "sparkles")
                         .font(.caption2).foregroundStyle(.secondary)
                 }

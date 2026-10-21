@@ -295,7 +295,7 @@ final class AppModel: ObservableObject {
         quickEstimate = 0
         refreshDisk()
         isCleaning = false
-        notify(title: "CompClean \(reason)", body: "Moved \(ByteFormat.string(outcome.bytesFreed)) of junk to the Trash.")
+        notify(title: "Suds \(reason)", body: "Moved \(ByteFormat.string(outcome.bytesFreed)) of junk to the Trash.")
         if hasScanned { await scan() }
     }
 
@@ -359,7 +359,7 @@ final class AppModel: ObservableObject {
             return
         }
         guard !info.isApple else {
-            uninstallMessage = "\(info.name) is part of macOS. CompClean never removes Apple apps."
+            uninstallMessage = "\(info.name) is part of macOS. Suds never removes Apple apps."
             return
         }
         await choose(info)

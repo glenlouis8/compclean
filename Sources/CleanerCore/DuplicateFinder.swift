@@ -59,7 +59,7 @@ public struct DuplicateFinder: Sendable {
                 explanation: Explanation(
                     title: c.url.lastPathComponent, safety: .yourFile,
                     reason: i == 0
-                        ? "The newest copy. CompClean suggests keeping this one."
+                        ? "The newest copy. Suds suggests keeping this one."
                         : "Exactly the same contents as \(keptAt), byte for byte. Removing this copy keeps the other.",
                     lastUsed: c.modified),
                 group: name, preselected: false, purpose: .userFiles, isKeeper: i == 0)

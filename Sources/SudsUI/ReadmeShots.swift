@@ -4,7 +4,7 @@ import SwiftUI
 // Screens rendered through Xcode previews for the README screenshots (docs/images).
 // The preview name becomes the window title in the image.
 
-#Preview("CompClean") {
+#Preview("Suds") {
     CleanerView().previewEnvironment(width: 820, height: 1100)
 }
 

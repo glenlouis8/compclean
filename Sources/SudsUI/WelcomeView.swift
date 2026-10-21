@@ -1,13 +1,13 @@
 import AppKit
 import SwiftUI
 
-/// Shown once, on first launch: what CompClean promises, in plain words.
+/// Shown once, on first launch: what Suds promises, in plain words.
 struct WelcomeView: View {
     @Environment(\.dismiss) private var dismiss
 
     private let promises: [(symbol: String, color: Color, title: String, detail: String)] = [
         ("lock.shield", .gray, "macOS is off-limits",
-         "CompClean never touches system folders, Apple's apps or Apple's own files. Those rules are built in and can't be switched off."),
+         "Suds never touches system folders, Apple's apps or Apple's own files. Those rules are built in and can't be switched off."),
         ("person.badge.key", .green, "Your logins stay put",
          "Cookies, saved passwords, browser history and bookmarks are never cleaned, so you won't be signed out of anything."),
         ("eye", .blue, "You see everything first",
@@ -20,7 +20,7 @@ struct WelcomeView: View {
         VStack(spacing: 22) {
             VStack(spacing: 8) {
                 Image(nsImage: NSApp.applicationIconImage).resizable().frame(width: 72, height: 72)
-                Text("Welcome to CompClean").font(.system(size: 26, weight: .bold)).tracking(-0.3)
+                Text("Welcome to Suds").font(.system(size: 26, weight: .bold)).tracking(-0.3)
                 Text("A free, open-source cleaner. Here's what it promises.").foregroundStyle(.secondary)
             }
             VStack(alignment: .leading, spacing: 16) {
@@ -35,7 +35,7 @@ struct WelcomeView: View {
                 }
             }
             HStack {
-                Link("Read the safety rules", destination: URL(string: "https://github.com/glenlouis8/compclean#why-you-can-trust-it")!)
+                Link("Read the safety rules", destination: URL(string: "https://github.com/glenlouis8/suds-mac#why-you-can-trust-it")!)
                 Spacer()
                 Button("Get started") { dismiss() }
                     .buttonStyle(.glassProminent).controlSize(.large).keyboardShortcut(.defaultAction)

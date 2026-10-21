@@ -1,7 +1,7 @@
 import CleanerCore
 import SwiftUI
 
-/// Everything CompClean has moved to the Trash, and putting it back.
+/// Everything Suds has moved to the Trash, and putting it back.
 @MainActor
 final class HistoryStore: ObservableObject {
     let ledger: TrashLedger

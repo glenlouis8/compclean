@@ -18,7 +18,7 @@ enum PreviewData {
         Finding(url: url("Library/Logs/com.spotify.client/spotify-2026-08.log"), size: 2_100_000, category: .oldLogs),
         Finding(url: url(".npm/_cacache"), size: 1_789_000_000, category: .devCaches),
         Finding(url: url("Library/Caches/Homebrew"), size: 65_600_000, category: .devCaches),
-        Finding(url: url("Library/Developer/Xcode/DerivedData/CompClean-abcdef"), size: 512_000_000, category: .devCaches),
+        Finding(url: url("Library/Developer/Xcode/DerivedData/Suds-abcdef"), size: 512_000_000, category: .devCaches),
     ]
 
     static let apps: [AppInfo] = [

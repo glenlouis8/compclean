@@ -3,8 +3,8 @@ import CleanerCore
 import Foundation
 import FoundationModels
 
-// Read-only: lists what CompClean would suggest removing. Nothing is moved.
-// Usage: compclean-preview [--orphans | --dev | --big | --dupes]
+// Read-only: lists what Suds would suggest removing. Nothing is moved.
+// Usage: suds-preview [--orphans | --dev | --big | --dupes]
 let policy = SafetyPolicy()
 let home = policy.home
 let mode = CommandLine.arguments.dropFirst().first ?? "--clean"
@@ -44,7 +44,7 @@ case "--dev":
     print("Unavailable simulators: \(DevTools.unavailableSimulatorCount())")
     print("Docker: \(DevTools.dockerReclaimable() ?? "not running / not installed")")
 case "--ai":
-    // Runs CompClean's real AI prompts on this Mac's on-device model. Read-only.
+    // Runs the app's real AI prompts on this Mac's on-device model. Read-only.
     print("Model:", SystemLanguageModel.default.availability)
     let explainer = ItemExplainer(home: home)
     let found = Scanner(policy: policy).scan(Set(CleanCategory.allCases))
@@ -104,11 +104,11 @@ case "--skipped":
 case "--selftest":
     // Real Trash round trip on a throwaway folder: trash it, put it back, trash it again.
     let fm = FileManager.default
-    let probe = URL(fileURLWithPath: home + "/Library/Caches/com.compclean.selftest")
+    let probe = URL(fileURLWithPath: home + "/Library/Caches/com.suds.selftest")
     try? fm.createDirectory(at: probe, withIntermediateDirectories: true)
     try? Data("hello".utf8).write(to: probe.appendingPathComponent("note.txt"))
-    let ledger = TrashLedger(home: home, url: URL(fileURLWithPath: NSTemporaryDirectory() + "compclean-selftest.json"))
-    let out = Trasher(policy: policy, log: ActionLog(url: URL(fileURLWithPath: NSTemporaryDirectory() + "compclean-selftest.log")))
+    let ledger = TrashLedger(home: home, url: URL(fileURLWithPath: NSTemporaryDirectory() + "suds-selftest.json"))
+    let out = Trasher(policy: policy, log: ActionLog(url: URL(fileURLWithPath: NSTemporaryDirectory() + "suds-selftest.log")))
         .trash([(probe, 5)], purpose: .clean)
     print("trashed: \(out.moves.map { $0.to?.path ?? "?" }) refused: \(out.refused.map(\.reason))")
     let session = ledger.record(feature: "selftest", moves: out.moves)!

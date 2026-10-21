@@ -13,7 +13,7 @@ struct HistoryView: View {
             header.probe("page header")
             if history.sessions.isEmpty {
                 ContentUnavailableView("Nothing removed yet", systemImage: "clock.arrow.circlepath",
-                                       description: Text("Every time CompClean moves something to the Trash, it's listed here so you can put it back."))
+                                       description: Text("Every time Suds moves something to the Trash, it's listed here so you can put it back."))
             } else {
                 List {
                     ForEach(history.sessions) { session in
@@ -32,7 +32,7 @@ struct HistoryView: View {
             IconTile(symbol: "clock.arrow.circlepath", color: .green, size: 44)
             VStack(alignment: .leading, spacing: 2) {
                 Text("History").font(.system(size: 24, weight: .bold)).tracking(-0.3)
-                Text(history.message ?? "Everything CompClean moved to the Trash. Put back anything that's still there.")
+                Text(history.message ?? "Everything Suds moved to the Trash. Put back anything that's still there.")
                     .foregroundStyle(.secondary)
             }
             Spacer()

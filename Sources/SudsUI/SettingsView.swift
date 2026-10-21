@@ -27,7 +27,7 @@ struct SettingsView: View {
                        isOn: Binding(get: { ai.enabled }, set: { ai.enabled = $0 }))
                     .disabled(!ai.isAvailable)
                 LabeledContent("Status") { Text(ai.statusText).foregroundStyle(.secondary) }
-                Text("It only explains what CompClean already decided. It never chooses or removes anything, and nothing leaves your Mac.")
+                Text("It only explains what Suds already decided. It never chooses or removes anything, and nothing leaves your Mac.")
                     .font(.callout).foregroundStyle(.secondary)
             }
             Section("Automatic cleaning") {
@@ -54,14 +54,14 @@ struct SettingsView: View {
                 }
             }
             Section("Menu bar") {
-                Toggle("Show CompClean in the menu bar", isOn: $showInMenuBar)
+                Toggle("Show Suds in the menu bar", isOn: $showInMenuBar)
                 Toggle("Show free space next to the icon", isOn: $menuBarShowsFree)
                     .disabled(!showInMenuBar)
                 Toggle("Show a dot when over 1 GB of caches can be cleaned", isOn: $menuBarShowsDot)
                     .disabled(!showInMenuBar)
                 Text(showInMenuBar
-                     ? "Clean caches and check free space from the menu bar. Closing the window keeps CompClean there."
-                     : "CompClean stays in the Dock instead, so you can always get back to it. Automatic cleaning keeps working.")
+                     ? "Clean caches and check free space from the menu bar. Closing the window keeps Suds there."
+                     : "Suds stays in the Dock instead, so you can always get back to it. Automatic cleaning keeps working.")
                     .font(.callout).foregroundStyle(.secondary)
             }
             Section("App") {

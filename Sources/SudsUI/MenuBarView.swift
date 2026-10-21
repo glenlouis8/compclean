@@ -39,14 +39,14 @@ struct MenuBarMenu: View {
 
         Divider()
 
-        Button { open(nil) } label: { Label("Open CompClean", systemImage: "macwindow") }
+        Button { open(nil) } label: { Label("Open Suds", systemImage: "macwindow") }
             .keyboardShortcut("o")
         Button { open(.settings) } label: { Label("Settings…", systemImage: "gearshape") }
             .keyboardShortcut(",")
 
         Divider()
 
-        Button { NSApp.terminate(nil) } label: { Label("Quit CompClean", systemImage: "power") }
+        Button { NSApp.terminate(nil) } label: { Label("Quit Suds", systemImage: "power") }
             .keyboardShortcut("q")
     }
 
@@ -85,7 +85,7 @@ struct MenuBarLabel: View {
             Image(nsImage: Self.icon(withDot: hasLots))
             if showsFree { Text(Self.short(model.diskFree)) }
         }
-        .help(hasLots ? "Over 1 GB of caches ready to clean" : "CompClean")
+        .help(hasLots ? "Over 1 GB of caches ready to clean" : "Suds")
     }
 
     /// "327 GB" — no decimals, so it stays narrow in the menu bar.
@@ -99,7 +99,7 @@ struct MenuBarLabel: View {
 
     static func icon(withDot dot: Bool) -> NSImage {
         let config = NSImage.SymbolConfiguration(pointSize: 14, weight: .medium)
-        guard let symbol = NSImage(systemSymbolName: "sparkles", accessibilityDescription: "CompClean")?
+        guard let symbol = NSImage(systemSymbolName: "sparkles", accessibilityDescription: "Suds")?
             .withSymbolConfiguration(config) else { return NSImage() }
         guard dot else { symbol.isTemplate = true; return symbol }
         let size = NSSize(width: symbol.size.width + 3, height: symbol.size.height)

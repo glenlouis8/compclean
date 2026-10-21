@@ -33,7 +33,7 @@ public enum PutBackResult: Sendable, Equatable {
 }
 
 /// Remembers what was moved to the Trash so it can be shown and put back.
-/// Stored as JSON at ~/Library/Application Support/CompClean/history.json.
+/// Stored as JSON at ~/Library/Application Support/Suds/history.json.
 public final class TrashLedger: @unchecked Sendable {
     public let url: URL
     public let home: String
@@ -42,7 +42,7 @@ public final class TrashLedger: @unchecked Sendable {
     public init(home: String = SafetyPolicy().home, url: URL? = nil) {
         self.home = home
         self.url = url ?? URL(fileURLWithPath: home)
-            .appendingPathComponent("Library/Application Support/CompClean/history.json")
+            .appendingPathComponent("Library/Application Support/Suds/history.json")
     }
 
     public func sessions() -> [LedgerSession] {

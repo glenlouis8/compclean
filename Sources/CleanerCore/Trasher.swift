@@ -98,12 +98,12 @@ public struct Trasher: Sendable {
     }
 }
 
-/// Append-only record of every action, at ~/Library/Logs/CompClean/actions.log.
+/// Append-only record of every action, at ~/Library/Logs/Suds/actions.log.
 public struct ActionLog: Sendable {
     public let url: URL
 
     public init(url: URL = FileManager.default.homeDirectoryForCurrentUser
-        .appendingPathComponent("Library/Logs/CompClean/actions.log")) {
+        .appendingPathComponent("Library/Logs/Suds/actions.log")) {
         self.url = url
     }
 

@@ -1,11 +1,11 @@
 import SwiftUI
 
 /// Debug aid for diagnosing layout without screenshots. Does nothing unless these are set:
-/// - COMPCLEAN_LAYOUT_LOG=<file>: tagged views append their on-screen frame to that file.
-/// - COMPCLEAN_PANE=<pane name>: open on that screen (e.g. "Unused apps").
+/// - SUDS_LAYOUT_LOG=<file>: tagged views append their on-screen frame to that file.
+/// - SUDS_PANE=<pane name>: open on that screen (e.g. "Unused apps").
 struct LayoutProbe: ViewModifier {
     let name: String
-    static let file = ProcessInfo.processInfo.environment["COMPCLEAN_LAYOUT_LOG"]
+    static let file = ProcessInfo.processInfo.environment["SUDS_LAYOUT_LOG"]
 
     func body(content: Content) -> some View {
         if let file = Self.file {
@@ -30,7 +30,7 @@ struct LayoutProbe: ViewModifier {
     }
 
     static var startPane: Pane? {
-        ProcessInfo.processInfo.environment["COMPCLEAN_PANE"].flatMap(Pane.init(rawValue:))
+        ProcessInfo.processInfo.environment["SUDS_PANE"].flatMap(Pane.init(rawValue:))
     }
 }
 

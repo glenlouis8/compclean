@@ -27,12 +27,12 @@ import Testing
     @Test func leakedFactsAreStripped() {
         let leaked = """
         <facts>
-        Removing it moves it to the Trash. It can be put back from CompClean's History.
+        Removing it moves it to the Trash. It can be put back from History in Suds.
         </facts>
 
-        CompClean says you should review it first.
+        Suds says you should review it first.
         """
-        #expect(AIFacts.cleanAnswer(leaked) == "CompClean says you should review it first.")
+        #expect(AIFacts.cleanAnswer(leaked) == "Suds says you should review it first.")
         // Mid-stream: the block isn't closed yet, so nothing of it shows.
         #expect(AIFacts.cleanAnswer("<facts>\nItem: x\nSize: 4 KB") == "")
         #expect(AIFacts.cleanAnswer("Verdict: Review first.\nIt's a Python environment.") == "It's a Python environment.")

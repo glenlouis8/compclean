@@ -44,7 +44,7 @@ public struct LargeFileFinder: Sendable {
             url: url, size: Int64(v.totalFileAllocatedSize ?? v.fileSize ?? 0),
             explanation: Explanation(
                 title: url.lastPathComponent, safety: .yourFile,
-                reason: "\(kind.prefix(1).uppercased() + kind.dropFirst()) in \(folder). This is your own file. CompClean can't know if you still need it, so only remove it if you're sure.",
+                reason: "\(kind.prefix(1).uppercased() + kind.dropFirst()) in \(folder). This is your own file. Suds can't know if you still need it, so only remove it if you're sure.",
                 lastUsed: used),
             group: group, preselected: false, purpose: .userFiles)
     }

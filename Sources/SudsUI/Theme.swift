@@ -48,7 +48,7 @@ extension Color {
     }
 }
 
-/// CompClean's palette: a two-tone gradient per kind of junk, and a brand gradient.
+/// The app's palette: a two-tone gradient per kind of junk, and a brand gradient.
 enum Palette {
     static let brand = [Color(hex: 0x38BDF8), Color(hex: 0x6366F1)]       // sky → indigo
     static let disk = [Color(hex: 0x60A5FA), Color(hex: 0xA78BFA)]        // used space on the ring

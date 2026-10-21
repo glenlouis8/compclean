@@ -3,15 +3,15 @@ import CleanerCore
 import SwiftUI
 
 /// The whole app: main window and menu bar extra. The executable target just launches this.
-public struct CompCleanScenes: Scene {
+public struct SudsScenes: Scene {
     @StateObject private var model = AppModel()
-    /// People choose whether CompClean lives in the menu bar (Apple's guidelines).
+    /// People choose whether Suds lives in the menu bar (Apple's guidelines).
     @AppStorage("showInMenuBar") private var showInMenuBar = true
 
     public init() {}
 
     public var body: some Scene {
-        Window("CompClean", id: "main") {
+        Window("Suds", id: "main") {
             MainView()
                 .environmentObject(model)
                 .environmentObject(model.history)
@@ -196,7 +196,7 @@ struct PermissionBanner: View {
             IconTile(symbol: "lock.shield.fill", color: .orange, size: 32)
             VStack(alignment: .leading, spacing: 2) {
                 Text("Turn on Full Disk Access").font(.headline)
-                Text("So CompClean can see every cache and leftover. Switch it on for CompClean, then come back.")
+                Text("So Suds can see every cache and leftover. Switch it on for Suds, then come back.")
                     .font(.callout).foregroundStyle(.secondary)
             }
             Spacer()
