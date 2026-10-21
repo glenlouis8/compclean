@@ -158,7 +158,9 @@ final class SeededHome {
 
     @Test func scheduleIsDue() {
         let now = Date()
-        #expect(Schedule.daily.isDue(lastRun: nil, now: now))
+        // Never cleans on first launch: no last run means it hasn't started counting.
+        #expect(!Schedule.daily.isDue(lastRun: nil, now: now))
+        #expect(Schedule.defaultValue == .off)
         #expect(!Schedule.daily.isDue(lastRun: now.addingTimeInterval(-3_600), now: now))
         #expect(Schedule.daily.isDue(lastRun: now.addingTimeInterval(-90_000), now: now))
         #expect(!Schedule.weekly.isDue(lastRun: now.addingTimeInterval(-3 * 86_400), now: now))

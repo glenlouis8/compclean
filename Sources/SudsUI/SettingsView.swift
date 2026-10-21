@@ -32,9 +32,9 @@ struct SettingsView: View {
             }
             Section("Automatic cleaning") {
                 Picker("Schedule", selection: Binding(get: { model.schedule }, set: { model.schedule = $0 })) {
-                    ForEach(Schedule.allCases) { Text($0.title).tag($0) }
+                    ForEach(Schedule.choices) { Text($0.title).tag($0) }
                 }
-                Text("Auto clean only covers app, browser and developer caches and old logs. Old downloads are never removed automatically.")
+                Text("Off until you turn it on. Auto clean only covers app, browser and developer caches and old logs. Old downloads are never removed automatically.")
                     .font(.callout).foregroundStyle(.secondary)
                 LabeledContent("Last auto clean") {
                     Text(model.lastAutoRun.map { $0.formatted(date: .abbreviated, time: .shortened) } ?? "Never")

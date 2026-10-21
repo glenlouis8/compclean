@@ -47,7 +47,7 @@ Prefer not to run a downloaded app? [Build it yourself](#build-and-run) from the
 ## What it does
 
 **Clean**
-- **Cleaner**: app caches, browser caches, old logs and developer caches (Homebrew, npm, Yarn, pip, uv, Xcode DerivedData). It can run automatically, daily or weekly, from the menu bar.
+- **Cleaner**: app caches, browser caches, old logs and developer caches (Homebrew, npm, Yarn, pip, uv, Xcode DerivedData). If you turn it on in Settings, it can also run by itself, daily or weekly. It never cleans on its own until you do.
 - **Developer junk**: `node_modules`, Python virtual environments, Rust `target`, Swift `.build` and Terraform `.terraform` folders in projects you haven't touched in a while. Also old Xcode archives and device support files.
 
 **Find**

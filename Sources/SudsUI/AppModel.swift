@@ -128,7 +128,7 @@ final class AppModel: ObservableObject {
     @Published var justUninstalled: UninstallSummary?
 
     // Settings
-    @AppStorage("schedule") var scheduleRaw = Schedule.weekly.rawValue
+    @AppStorage("schedule") var scheduleRaw = Schedule.defaultValue.rawValue
     @AppStorage("lastAutoRun") private var lastAutoRunStamp: Double = 0
     @AppStorage("totalFreed") var totalFreed: Double = 0
     @Published var hasFullDiskAccess = false
@@ -137,8 +137,13 @@ final class AppModel: ObservableObject {
     private var timer: Timer?
 
     var schedule: Schedule {
-        get { Schedule(rawValue: scheduleRaw) ?? .weekly }
-        set { scheduleRaw = newValue.rawValue; objectWillChange.send() }
+        get { Schedule(rawValue: scheduleRaw) ?? .defaultValue }
+        set {
+            // Start counting from now: the first automatic clean is a full day or week away.
+            if schedule == .off, newValue != .off { lastAutoRunStamp = Date().timeIntervalSince1970 }
+            scheduleRaw = newValue.rawValue
+            objectWillChange.send()
+        }
     }
 
     var lastAutoRun: Date? { lastAutoRunStamp > 0 ? Date(timeIntervalSince1970: lastAutoRunStamp) : nil }
@@ -312,8 +317,8 @@ final class AppModel: ObservableObject {
     }
 
     var nextAutoRun: Date? {
-        guard let interval = schedule.interval else { return nil }
-        return (lastAutoRun ?? Date()).addingTimeInterval(lastAutoRun == nil ? 0 : interval)
+        guard let interval = schedule.interval, let lastAutoRun else { return nil }
+        return lastAutoRun.addingTimeInterval(interval)
     }
 
     private func autoCleanIfDue() {

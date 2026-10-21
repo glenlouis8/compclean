@@ -23,9 +23,22 @@ public enum Schedule: String, CaseIterable, Sendable, Identifiable {
         }
     }
 
+    /// Automatic cleaning stays off until the person turns it on.
+    public static let defaultValue = Schedule.off
+
+    /// What Settings offers. The one-minute schedule is for testing builds only.
+    public static var choices: [Schedule] {
+        #if DEBUG
+        allCases
+        #else
+        [.off, .daily, .weekly]
+        #endif
+    }
+
+    /// `lastRun` is the last clean, or when the schedule was turned on. With neither, it's never due,
+    /// so nothing is cleaned the moment someone opens the app.
     public func isDue(lastRun: Date?, now: Date = Date()) -> Bool {
-        guard let interval else { return false }
-        guard let lastRun else { return true }
+        guard let interval, let lastRun else { return false }
         return now.timeIntervalSince(lastRun) >= interval
     }
 }
