@@ -2,7 +2,17 @@
 
 A macOS storage cleaner and complete app uninstaller that explains every file before it touches anything.
 
-Built for macOS 26 (Tahoe) and later with SwiftUI and Liquid Glass.
+Built for macOS 26 (Tahoe) and later with SwiftUI and Liquid Glass. Free and open source, with no subscriptions, accounts, upsells or tracking.
+
+## Why I built this
+
+I got tired of Mac cleaner apps. Most want a subscription, flash a scary number of gigabytes at you, and then delete things without really telling you what they were. I didn't want to hand that kind of access to my Mac to an app I couldn't see inside.
+
+So I built my own, with a few rules. It never touches macOS. It never signs me out of anything. It explains every single item in plain words before anything moves. And nothing is ever really deleted, because everything goes to the Trash and can be put back.
+
+The first clean on my own Mac moved 3.4 GB of caches to the Trash. The leftovers finder turned up files from 21 apps I'd deleted long ago. Testing it against my own Mac also caught its own mistakes before they shipped: two macOS parts it would have flagged, and updater frameworks that apps I still use depend on. Those are now blocked by rules and covered by tests.
+
+It's free, and it stays free. If it helps you, great. If you spot something it gets wrong, please [open an issue](https://github.com/glenlouis8/compclean/issues).
 
 ## Download
 
@@ -34,18 +44,30 @@ Prefer not to run a downloaded app? [Build it yourself](#build-and-run) from the
 **History**
 - Every clean and uninstall is recorded. Anything still in the Trash can be **put back** to its original place.
 
-## Safety
+**On-device AI (optional)**
+- **Ask about any item**, for example *"What is this?"* or *"Will I lose anything?"*, and get a plain-English answer.
+- **Scan summary**: one or two sentences on what a scan found.
+- This uses Apple's on-device language model through the Foundation Models framework, on Macs with Apple Intelligence turned on. Nothing is sent anywhere. The model only explains facts CompClean has already worked out. It never decides what's safe, and never selects or removes anything. You can turn it off in Settings. Macs without it just see the normal explanations.
 
-CompClean is built around a single safety gate, `SafetyPolicy`, which every removal must pass. It works as an **allowlist**: a location is refused unless it's explicitly known to be safe for that kind of removal.
+## Why you can trust it
 
-- **Nothing is deleted.** Everything goes to the Trash, and you can put it back from History.
-- **macOS and Apple are off-limits.** It never touches system folders, anything named `com.apple…`, Apple-signed apps, or macOS parts with older names (printing, Shortcuts…).
-- **Logins and personal data are protected.** Cookies, saved passwords, browser history, bookmarks and site storage, keychains, Mail, Messages, Photos libraries and iCloud Drive are never touched by the cleaner.
-- **Symlinks are refused**, and paths are resolved first, so a link can't trick it into a system folder.
-- **You review first.** Only caches and logs can be cleaned automatically. Everything else is shown with a plain explanation and a safety label (*Rebuilds itself*, *Leftover*, *Review first*, *Your file*). Your own files are never pre-selected.
-- **Some things can't be undone.** Developer tools that clean up after themselves (`xcrun simctl delete unavailable`, `docker system prune`) can't be put back, so the app says so and asks first.
+### The promises
 
-The test suite covers the safety rules and full flows (clean, uninstall, leftovers, developer junk, duplicates, put back). It runs against a fake home folder with a fake Trash, and checks after every flow that protected files are byte-for-byte unchanged.
+1. **It never touches macOS.** No system folders, nothing named `com.apple…`, no Apple-signed apps, and none of the macOS parts that use older names (printing, Shortcuts…).
+2. **It never signs you out.** Cookies, saved passwords, browser history, bookmarks and site storage are never cleaned. Neither are keychains, Mail, Messages, Photos libraries or iCloud Drive.
+3. **You see everything first.** Every item has a plain-language explanation and a safety label: *Rebuilds itself*, *Leftover*, *Review first* or *Your file*. Only caches and logs can be cleaned automatically, and your own files are never ticked for you.
+4. **Nothing is deleted.** Everything goes to the Trash, and History can put any item back where it was. The only exceptions are developer tools that clean up after themselves (`xcrun simctl delete unavailable`, `docker system prune`). The app tells you those can't be undone and asks first.
+5. **Nothing leaves your Mac.** CompClean never connects to the internet. There are no accounts, no analytics and no tracking. The optional AI explanations run on Apple's on-device model.
+
+### Don't take my word for it
+
+You can check every promise yourself:
+
+- **One gate for every removal.** Everything CompClean removes passes through [`SafetyPolicy.swift`](Sources/CleanerCore/SafetyPolicy.swift). It works as an *allowlist*: a location is refused unless it's explicitly known to be safe for that kind of removal. Symlinks are refused and paths are resolved first, so a link can't redirect it into a system folder.
+- **One mover.** [`Trasher.swift`](Sources/CleanerCore/Trasher.swift) is the only code that moves files, and it checks the gate again right before each move.
+- **The tests.** [`Tests/`](Tests/CleanerCoreTests) runs every feature end to end against a fake home folder that looks like a real one, with a fake Trash. After each flow it checks that 26 protected files (cookies, saved logins, browser history, a keychain, Apple caches, iCloud files, documents) are byte-for-byte unchanged. Run them with `swift test`.
+- **Preview on your own Mac.** `swift run -c release compclean-preview --skipped` lists everything in your caches and logs, and why each item would be offered or skipped. Nothing is moved.
+- **The record.** Every action is written to `~/Library/Logs/CompClean/actions.log`, and to History inside the app.
 
 > **Use at your own risk.** CompClean has been tested carefully, but every Mac is different. Look over what's in the Trash before you empty it.
 
@@ -77,7 +99,7 @@ Preview what each finder would suggest on your Mac, without moving anything:
 swift run -c release compclean-preview --orphans
 ```
 
-The other options are `--dev`, `--big`, `--dupes` and `--map`. With no option, it previews the cleaner.
+The other options are `--dev`, `--big`, `--dupes`, `--map`, `--skipped` and `--ai`. With no option, it previews the cleaner.
 
 ## Permissions
 

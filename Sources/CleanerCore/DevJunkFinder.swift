@@ -127,6 +127,21 @@ public struct DevJunkFinder: Sendable {
                     group: "Xcode archives", preselected: false, purpose: .devProjects))
             }
         }
+        // Browsers Playwright downloaded for testing, one folder per version (chromium-1140, webkit-2104…).
+        let playwright = home.appendingPathComponent("Library/Caches/ms-playwright")
+        for item in FileSize.children(playwright)
+        where FileSize.isDirectory(item) && !item.lastPathComponent.hasPrefix(".") && policy.canTrash(item, for: .devProjects) {
+            let used = ItemExplainer.lastUsed(item)
+            out.append(ReviewItem(
+                url: item, size: FileSize.allocated(item),
+                explanation: Explanation(
+                    title: "Playwright · \(item.lastPathComponent)", safety: .reviewFirst,
+                    reason: "A copy of a web browser that the testing tool Playwright downloaded so it can run automated tests. It's not the browser you browse with. Running npx playwright install downloads it again if a project needs it.",
+                    lastUsed: used),
+                group: "Playwright test browsers",
+                preselected: used.map { now.timeIntervalSince($0) > staleAge } ?? true,
+                purpose: .devProjects))
+        }
         for platform in ["iOS DeviceSupport", "macOS DeviceSupport", "watchOS DeviceSupport"] {
             for item in FileSize.children(xcode.appendingPathComponent(platform))
             where FileSize.isDirectory(item) && policy.canTrash(item, for: .devProjects) {

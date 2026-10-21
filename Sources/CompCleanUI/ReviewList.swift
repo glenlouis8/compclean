@@ -48,6 +48,7 @@ struct SafetyBadge: View {
 /// One row: what it is, who it belongs to, how safe it is, when it was last used.
 /// Expands to show why it can go and exactly where it lives.
 struct ReviewRow: View {
+    @EnvironmentObject var ai: AIAssistant
     let url: URL
     let size: Int64
     let explanation: Explanation
@@ -73,6 +74,15 @@ struct ReviewRow: View {
                 }
                 Spacer()
                 Text(ByteFormat.string(size)).font(.callout.monospacedDigit()).foregroundStyle(.secondary)
+                if ai.isUsable && !expanded {
+                    Button {
+                        withAnimation(.ui) { expanded = true }
+                    } label: {
+                        Label("Ask", systemImage: "sparkles")
+                    }
+                    .buttonStyle(.glass).controlSize(.small)
+                    .help("Ask the on-device AI about this item")
+                }
                 Button {
                     withAnimation(.ui) { expanded.toggle() }
                 } label: {
@@ -95,6 +105,9 @@ struct ReviewRow: View {
                         Spacer()
                         Button("Show in Finder") { NSWorkspace.shared.activateFileViewerSelecting([url]) }
                             .buttonStyle(.glass).controlSize(.small)
+                    }
+                    if ai.isUsable {
+                        AskPanel(facts: AIFacts.item(url: url, size: size, explanation: explanation, home: home))
                     }
                 }
                 .padding(.leading, 66)
@@ -135,20 +148,24 @@ struct ReviewList: View {
             if items.isEmpty {
                 ContentUnavailableView(emptyText, systemImage: "checkmark.seal")
             } else {
-                List {
-                    ForEach(groups, id: \.name) { group in
-                        Section {
-                            ForEach(group.items) { item in
-                                ReviewRow(url: item.url, size: item.size, explanation: item.explanation,
-                                          isSelected: binding(for: item.id))
+                VStack(spacing: 0) {
+                    AIHint().padding(.horizontal, 16).padding(.bottom, 6)
+                    List {
+                        ForEach(groups, id: \.name) { group in
+                            Section {
+                                ForEach(group.items) { item in
+                                    ReviewRow(url: item.url, size: item.size, explanation: item.explanation,
+                                              isSelected: binding(for: item.id))
+                                }
+                            } header: {
+                                groupHeader(group.name, group.items)
                             }
-                        } header: {
-                            groupHeader(group.name, group.items)
                         }
                     }
+                    .scrollContentBackground(.hidden)
+                    .safeAreaPadding(.bottom, 80)
+                    .frame(minHeight: 0)
                 }
-                .scrollContentBackground(.hidden)
-                .safeAreaPadding(.bottom, 80)
                 .overlay(alignment: .bottom) { capsule }
             }
         }

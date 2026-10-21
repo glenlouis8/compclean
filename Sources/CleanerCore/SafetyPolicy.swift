@@ -82,12 +82,13 @@ public struct SafetyPolicy: Sendable {
         ".terraform": "parent:.terraform.lock.hcl",
     ]
 
-    /// Xcode folders whose children are safe to review and remove.
-    static let xcodeExtras: [[String]] = [
+    /// Developer tool folders whose children are safe to review and remove.
+    static let devToolFolders: [[String]] = [
         ["Library", "Developer", "Xcode", "Archives"],
         ["Library", "Developer", "Xcode", "iOS DeviceSupport"],
         ["Library", "Developer", "Xcode", "macOS DeviceSupport"],
         ["Library", "Developer", "Xcode", "watchOS DeviceSupport"],
+        ["Library", "Caches", "ms-playwright"],
     ]
 
     /// Plain-named folders in ~/Library/Caches or ~/Library/Logs known to be third-party.
@@ -192,7 +193,7 @@ public struct SafetyPolicy: Sendable {
     }
 
     private func checkDevProject(_ rel: [String], path: String) -> Verdict {
-        for root in Self.xcodeExtras where rel.count > root.count && rel.starts(with: root) {
+        for root in Self.devToolFolders where rel.count > root.count && rel.starts(with: root) {
             return .allowed
         }
         guard let first = rel.first, first != "Library", !first.hasPrefix(".") else {

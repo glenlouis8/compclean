@@ -4,9 +4,32 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject var model: AppModel
+    @EnvironmentObject var ai: AIAssistant
+    @AppStorage("showInMenuBar") private var showInMenuBar = true
+    @AppStorage("menuBarShowsFree") private var menuBarShowsFree = false
+    @AppStorage("menuBarShowsDot") private var menuBarShowsDot = true
+    @AppStorage("appearance") private var appearance = AppAppearance.system.rawValue
+    @AppStorage("seenWelcome") private var seenWelcome = false
 
     var body: some View {
         Form {
+            Section("Look") {
+                Picker("Appearance", selection: $appearance) {
+                    ForEach(AppAppearance.allCases) { Text($0.title).tag($0.rawValue) }
+                }
+                .pickerStyle(.segmented)
+                LabeledContent("Welcome screen") {
+                    Button("Show again") { seenWelcome = false }
+                }
+            }
+            Section("AI explanations") {
+                Toggle("Explain items and summarize scans with Apple's on-device model",
+                       isOn: Binding(get: { ai.enabled }, set: { ai.enabled = $0 }))
+                    .disabled(!ai.isAvailable)
+                LabeledContent("Status") { Text(ai.statusText).foregroundStyle(.secondary) }
+                Text("It only explains what CompClean already decided. It never chooses or removes anything, and nothing leaves your Mac.")
+                    .font(.callout).foregroundStyle(.secondary)
+            }
             Section("Automatic cleaning") {
                 Picker("Schedule", selection: Binding(get: { model.schedule }, set: { model.schedule = $0 })) {
                     ForEach(Schedule.allCases) { Text($0.title).tag($0) }
@@ -29,6 +52,17 @@ struct SettingsView: View {
                         }
                     }
                 }
+            }
+            Section("Menu bar") {
+                Toggle("Show CompClean in the menu bar", isOn: $showInMenuBar)
+                Toggle("Show free space next to the icon", isOn: $menuBarShowsFree)
+                    .disabled(!showInMenuBar)
+                Toggle("Show a dot when over 1 GB of caches can be cleaned", isOn: $menuBarShowsDot)
+                    .disabled(!showInMenuBar)
+                Text(showInMenuBar
+                     ? "Clean caches and check free space from the menu bar. Closing the window keeps CompClean there."
+                     : "CompClean stays in the Dock instead, so you can always get back to it. Automatic cleaning keeps working.")
+                    .font(.callout).foregroundStyle(.secondary)
             }
             Section("App") {
                 Toggle("Open at login", isOn: Binding(get: { model.launchAtLogin }, set: { model.setLaunchAtLogin($0) }))
@@ -65,3 +99,9 @@ struct SettingsView: View {
         model.devRootsRaw = (current + added).joined(separator: "\n")
     }
 }
+
+#if DEBUG
+#Preview("Settings") {
+    SettingsView().previewEnvironment()
+}
+#endif

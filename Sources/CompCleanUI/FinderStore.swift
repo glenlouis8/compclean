@@ -86,7 +86,7 @@ struct FinderScreen<Extra: View>: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            header
+            header.probe("page header")
             if store.isScanning {
                 VStack(spacing: 12) {
                     ProgressView()
@@ -101,6 +101,7 @@ struct FinderScreen<Extra: View>: View {
                 } actions: {
                     Button("Look now") { Task { await store.scan() } }.buttonStyle(.glassProminent).controlSize(.large)
                 }
+                .frame(maxHeight: .infinity)
             } else {
                 ReviewList(items: store.items, selection: $store.selection, isWorking: store.isTrashing,
                            emptyText: emptyText) {
@@ -117,7 +118,7 @@ struct FinderScreen<Extra: View>: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title).font(.system(size: 24, weight: .bold)).tracking(-0.3)
                 Text(store.message ?? (store.hasScanned
-                    ? "Found \(ByteFormat.string(store.totalBytes)) in \(store.items.count) items. Tap › on any row to see what it is."
+                    ? "Found \(ByteFormat.string(store.totalBytes)) in \(store.items.count) items. Click › on any row to see what it is."
                     : subtitle))
                     .foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             }
@@ -131,9 +132,9 @@ struct FinderScreen<Extra: View>: View {
                 .disabled(store.isScanning || store.isTrashing)
             }
         }
-        .padding(22)
-        .glassCard(cornerRadius: 24)
-        .padding(16)
+        .padding(.horizontal, 24)
+        .padding(.top, 20)
+        .padding(.bottom, 12)
     }
 }
 
@@ -144,3 +145,13 @@ extension FinderScreen where Extra == EmptyView {
                   emptyText: emptyText) { EmptyView() }
     }
 }
+
+#if DEBUG
+#Preview("Leftovers") {
+    let m = PreviewData.leftoversModel()
+    return FinderScreen(store: m.leftoversStore, title: "Leftovers",
+                        subtitle: "Files that apps you already deleted left in your Library.",
+                        symbol: "shippingbox", color: .blue)
+        .previewEnvironment(m)
+}
+#endif

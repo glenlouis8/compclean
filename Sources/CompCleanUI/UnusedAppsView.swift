@@ -27,6 +27,7 @@ struct UnusedAppsView: View {
                     .scrollContentBackground(.hidden)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .task { if !model.usageLoaded { await model.loadUsage() } }
     }
 
@@ -49,9 +50,9 @@ struct UnusedAppsView: View {
             }
             .fixedSize()
         }
-        .padding(22)
-        .glassCard(cornerRadius: 24)
-        .padding(16)
+        .padding(.horizontal, 24)
+        .padding(.top, 20)
+        .padding(.bottom, 12)
         .probe("unused header")
     }
 }

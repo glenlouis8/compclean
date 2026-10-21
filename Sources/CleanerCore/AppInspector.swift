@@ -8,6 +8,15 @@ public struct AppInfo: Identifiable, Hashable, Sendable {
     public let version: String?
     public let teamID: String?
     public let isApple: Bool
+
+    public init(url: URL, name: String, bundleID: String, version: String?, teamID: String?, isApple: Bool) {
+        self.url = url
+        self.name = name
+        self.bundleID = bundleID
+        self.version = version
+        self.teamID = teamID
+        self.isApple = isApple
+    }
 }
 
 public enum AppInspector {

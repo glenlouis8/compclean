@@ -2,25 +2,30 @@ import AppKit
 import CleanerCore
 import SwiftUI
 
-@main
-struct CompCleanApp: App {
+/// The whole app: main window and menu bar extra. The executable target just launches this.
+public struct CompCleanScenes: Scene {
     @StateObject private var model = AppModel()
+    /// People choose whether CompClean lives in the menu bar (Apple's guidelines).
+    @AppStorage("showInMenuBar") private var showInMenuBar = true
 
-    var body: some Scene {
+    public init() {}
+
+    public var body: some Scene {
         Window("CompClean", id: "main") {
             MainView()
                 .environmentObject(model)
                 .environmentObject(model.history)
+                .environmentObject(model.ai)
                 .frame(minWidth: 860, minHeight: 560)
         }
         .windowResizability(.contentMinSize)
 
-        MenuBarExtra {
-            MenuBarView().environmentObject(model)
+        MenuBarExtra(isInserted: $showInMenuBar) {
+            MenuBarMenu().environmentObject(model)
         } label: {
-            Image(systemName: "sparkles")
+            MenuBarLabel().environmentObject(model)
         }
-        .menuBarExtraStyle(.window)
+        .menuBarExtraStyle(.menu)
     }
 }
 
@@ -53,19 +58,16 @@ enum Pane: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Colors of the soft background glow behind each screen.
-    var ambient: [Color] {
+    /// Colors of the soft wash at the top of each screen.
+    var wash: [Color] {
         switch self {
-        case .cleaner: [.teal, .blue, .purple]
-        case .devJunk: [.purple, .indigo, .blue]
-        case .leftovers: [.blue, .indigo, .teal]
-        case .bigFiles: [.pink, .orange, .purple]
-        case .duplicates: [.orange, .pink, .yellow]
-        case .diskMap: [.cyan, .blue, .purple]
-        case .uninstaller: [.purple, .pink, .blue]
-        case .unusedApps: [.indigo, .purple, .pink]
-        case .history: [.green, .teal, .blue]
-        case .settings: [.blue, .indigo, .teal]
+        case .cleaner, .settings: Palette.brand
+        case .devJunk: CleanCategory.devCaches.gradient
+        case .leftovers, .uninstaller: CleanCategory.userCaches.gradient
+        case .bigFiles, .duplicates: CleanCategory.oldDownloads.gradient
+        case .diskMap: CleanCategory.browserCaches.gradient
+        case .unusedApps: [Color(hex: 0x818CF8), Color(hex: 0xC084FC)]
+        case .history: [Color(hex: 0x34D399), Color(hex: 0x22D3EE)]
         }
     }
 
@@ -80,6 +82,9 @@ enum Pane: String, CaseIterable, Identifiable {
 
 struct MainView: View {
     @EnvironmentObject var model: AppModel
+    @AppStorage("seenWelcome") private var seenWelcome = false
+    @AppStorage("appearance") private var appearance = AppAppearance.system.rawValue
+    @AppStorage("showInMenuBar") private var showInMenuBar = true
 
     var body: some View {
         NavigationSplitView {
@@ -111,15 +116,22 @@ struct MainView: View {
                     .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                     .probe("detail content")
             }
-            // One background behind the banner and the screen, so it can't be painted over the banner.
-            .background(AmbientBackground(colors: (model.pane ?? .cleaner).ambient))
+            // The window title names the screen, like native Mac apps.
+            .navigationTitle((model.pane ?? .cleaner).rawValue)
+            .background(ScreenWash(colors: (model.pane ?? .cleaner).wash))
+        }
+        .sheet(isPresented: Binding(get: { !seenWelcome }, set: { if !$0 { seenWelcome = true } })) {
+            WelcomeView()
         }
         // Show in the Dock only while this window is open; the menu bar icon stays either way.
         .onAppear {
             NSApp.setActivationPolicy(.regular)
             NSApp.activate()
+            AppAppearance.apply(appearance)
         }
-        .onDisappear { NSApp.setActivationPolicy(.accessory) }
+        .onChange(of: appearance) { AppAppearance.apply(appearance) }
+        // Leave the Dock only if the menu bar icon is there to get back in.
+        .onDisappear { if showInMenuBar { NSApp.setActivationPolicy(.accessory) } }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             model.refreshPermission()
             model.refreshDisk()
@@ -152,27 +164,27 @@ struct SidebarFooter: View {
     @EnvironmentObject var model: AppModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("Macintosh HD").font(.caption.weight(.medium))
-                Spacer()
-                Text("\(ByteFormat.string(model.diskFree)) free").font(.caption.monospacedDigit())
-                    .foregroundStyle(.secondary)
-            }
+        VStack(alignment: .leading, spacing: 10) {
+            stat("internaldrive", "Free on Macintosh HD", model.diskFree)
             DiskBar(total: model.diskTotal, free: model.diskFree, height: 6)
-            HStack(spacing: 8) {
-                Image(systemName: "trash").foregroundStyle(.secondary).font(.caption)
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("Moved to Trash").font(.caption).foregroundStyle(.secondary)
-                    Text(ByteFormat.string(Int64(model.totalFreed))).font(.callout.weight(.semibold).monospacedDigit())
-                        .contentTransition(.numericText())
-                }
-            }
-            .help("Space comes back when you empty the Trash.")
+            stat("trash", "Moved to Trash", Int64(model.totalFreed))
+                .help("Space comes back when you empty the Trash.")
         }
         .padding(12)
         .background(Color.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .padding(12)
+    }
+
+    /// Icon, small label, big number: the same shape for both lines so nothing wraps.
+    private func stat(_ symbol: String, _ label: String, _ bytes: Int64) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: symbol).foregroundStyle(.secondary).font(.callout).frame(width: 18)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(label).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                Text(ByteFormat.string(bytes)).font(.callout.weight(.semibold).monospacedDigit())
+                    .contentTransition(.numericText()).lineLimit(1)
+            }
+        }
     }
 }
 
@@ -197,3 +209,9 @@ struct PermissionBanner: View {
         .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).strokeBorder(.orange.opacity(0.35)))
     }
 }
+
+#if DEBUG
+#Preview("Whole window") {
+    MainView().previewEnvironment(width: 960, height: 640)
+}
+#endif

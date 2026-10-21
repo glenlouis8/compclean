@@ -137,6 +137,8 @@ extension FakeHome {
         let x = e.explain(cache)
         #expect(x.title.hasPrefix("Brave"))
         #expect(x.safety == .rebuildsItself)
+        let swiftpm = Finding(url: try h.dir("Library/Caches/org.swift.swiftpm"), size: 1, category: .userCaches)
+        #expect(e.explain(swiftpm).title == "Swift Package Manager · cache")
         let npm = Finding(url: try h.dir(".npm/_cacache"), size: 1, category: .devCaches)
         #expect(e.explain(npm).title == "npm download cache")
         let dl = Finding(url: try h.file("Downloads/a.zip"), size: 1, category: .oldDownloads)

@@ -29,6 +29,13 @@ public struct Leftover: Identifiable, Hashable, Sendable {
     public let size: Int64
     public let match: MatchKind
     public let needsAdmin: Bool
+
+    public init(url: URL, size: Int64, match: MatchKind, needsAdmin: Bool) {
+        self.url = url
+        self.size = size
+        self.match = match
+        self.needsAdmin = needsAdmin
+    }
 }
 
 public struct LeftoverFinder: Sendable {

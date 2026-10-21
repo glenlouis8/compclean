@@ -54,6 +54,18 @@ import Testing
         #expect(items.allSatisfy { $0.purpose == .devProjects })
     }
 
+    @Test func playwrightBrowsersOfferedPerVersion() throws {
+        let h = try FakeHome()
+        try h.file("Library/Caches/ms-playwright/chromium-1140/chrome-mac/Chromium.app/x", bytes: 4096)
+        try h.file("Library/Caches/ms-playwright/webkit-2104/pw_run.sh", bytes: 4096)
+        let items = DevJunkFinder(policy: h.policy, roots: []).find()
+        #expect(Set(items.map(\.url.lastPathComponent)) == ["chromium-1140", "webkit-2104"])
+        #expect(items.allSatisfy { $0.group == "Playwright test browsers" && $0.explanation.safety == .reviewFirst })
+        // The folder itself is never offered, and the cleaner never touches it.
+        #expect(!h.policy.canTrash(h.url.appendingPathComponent("Library/Caches/ms-playwright"), for: .devProjects))
+        #expect(!h.policy.canTrash(h.url.appendingPathComponent("Library/Caches/ms-playwright"), for: .clean))
+    }
+
     @Test func junkFilesDontCountAsActivity() throws {
         let h = try FakeHome()
         let pkg = try h.file("Coding/app/package.json")

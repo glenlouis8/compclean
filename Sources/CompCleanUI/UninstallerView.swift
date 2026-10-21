@@ -11,10 +11,10 @@ struct UninstallerView: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            appList.frame(width: 290)
-                .glassCard(cornerRadius: 24)
+            appList.frame(width: 250)
+                .card(cornerRadius: 14)
             detail.frame(maxWidth: .infinity, maxHeight: .infinity)
-                .glassCard(cornerRadius: 24)
+                .card(cornerRadius: 14)
         }
         .padding(16)
         .animation(.ui, value: model.chosenApp)
@@ -214,14 +214,24 @@ struct AppDetail: View {
                 }
                 .frame(maxHeight: .infinity)
             } else {
-                List {
-                    group("The app", symbol: "app", items: appItems)
-                    group("Your Library", symbol: "person.crop.circle", items: userItems)
-                    group("System Library", symbol: "lock", items: systemItems,
-                          note: "Third-party files only. Asks for your password once.")
+                // Rounded panels instead of a List: Apple's list view crashed on these sections.
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        ForEach(groups, id: \.title) { g in
+                            VStack(alignment: .leading, spacing: 8) {
+                                groupHeader(g).padding(.horizontal, 4)
+                                VStack(spacing: 0) {
+                                    ForEach(Array(g.items.enumerated()), id: \.element.id) { i, item in
+                                        if i > 0 { Divider().padding(.leading, 44) }
+                                        LeftoverRow(item: item).padding(.horizontal, 12).padding(.vertical, 6)
+                                    }
+                                }
+                                .card(cornerRadius: 14)
+                            }
+                        }
+                    }
+                    .padding(16)
                 }
-                .listStyle(.inset)
-                .scrollContentBackground(.hidden)
                 .safeAreaPadding(.bottom, 80)
             }
         }
@@ -256,50 +266,64 @@ struct AppDetail: View {
         .animation(.ui, value: model.leftoverSelection)
     }
 
+    /// Two rows so nothing gets squeezed on narrow windows: identity on top, size and actions below.
     private var header: some View {
-        HStack(spacing: 16) {
-            Image(nsImage: NSWorkspace.shared.icon(forFile: app.url.path)).resizable().frame(width: 64, height: 64)
-                .shadow(color: .black.opacity(0.2), radius: 6, y: 3)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(app.name).font(.system(size: 24, weight: .bold)).tracking(-0.3).lineLimit(1)
-                Text([app.version.map { "Version \($0)" }, app.bundleID].compactMap { $0 }.joined(separator: "  ·  "))
-                    .font(.callout).foregroundStyle(.secondary).lineLimit(1)
-            }
-            Spacer()
-            if !model.isFindingLeftovers {
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text(ByteFormat.string(totalBytes)).font(.system(.title2, design: .rounded).bold()).monospacedDigit()
-                    Text("in \(model.leftovers.count) places").font(.caption).foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 14) {
+                Image(nsImage: NSWorkspace.shared.icon(forFile: app.url.path)).resizable().frame(width: 56, height: 56)
+                    .shadow(color: .black.opacity(0.2), radius: 6, y: 3)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(app.name).font(.system(size: 22, weight: .bold)).tracking(-0.3)
+                        .lineLimit(1).minimumScaleFactor(0.8)
+                    Text([app.version.map { "Version \($0)" }, app.bundleID].compactMap { $0 }.joined(separator: "  ·  "))
+                        .font(.callout).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
                 }
-                Menu {
-                    Button("Recommended") { model.selectLeftovers(.recommended) }
-                    Button("Everything") { model.selectLeftovers(.all) }
-                    Button("Nothing") { model.selectLeftovers(.none) }
-                } label: { Label("Select", systemImage: "checklist") }
-                .buttonStyle(.glass)
-                .fixedSize()
+                .layoutPriority(1)
+                Spacer(minLength: 0)
+            }
+            if !model.isFindingLeftovers {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text(ByteFormat.string(totalBytes)).font(.system(.title3, design: .rounded).bold()).monospacedDigit()
+                        .fixedSize()
+                    Text("in \(model.leftovers.count) places").foregroundStyle(.secondary).fixedSize()
+                    Spacer(minLength: 8)
+                    Menu {
+                        Button("Recommended") { model.selectLeftovers(.recommended) }
+                        Button("Everything") { model.selectLeftovers(.all) }
+                        Button("Nothing") { model.selectLeftovers(.none) }
+                    } label: { Label("Select", systemImage: "checklist") }
+                    .buttonStyle(.glass)
+                    .fixedSize()
+                }
             }
         }
-        .padding(22)
+        .padding(20)
     }
 
-    @ViewBuilder
-    private func group(_ title: String, symbol: String, items: [Leftover], note: String? = nil) -> some View {
-        if !items.isEmpty {
-            Section {
-                ForEach(items) { LeftoverRow(item: $0) }
-            } header: {
-                HStack(spacing: 6) {
-                    Image(systemName: symbol)
-                    Text(title).fontWeight(.semibold)
-                    Text(ByteFormat.string(items.reduce(0) { $0 + $1.size })).monospacedDigit().foregroundStyle(.secondary)
-                    Spacer()
-                    if let note { Text(note).font(.caption).foregroundStyle(.secondary) }
-                }
-                .font(.callout)
-                .padding(.top, 6)
-            }
+    private struct Group {
+        let title: String
+        let symbol: String
+        let items: [Leftover]
+        var note: String?
+    }
+
+    private var groups: [Group] {
+        [Group(title: "The app", symbol: "macwindow", items: appItems),
+         Group(title: "Your Library", symbol: "person.crop.circle", items: userItems),
+         Group(title: "System Library", symbol: "lock", items: systemItems,
+               note: "Third-party files only. Asks for your password once.")]
+            .filter { !$0.items.isEmpty }
+    }
+
+    private func groupHeader(_ g: Group) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: g.symbol)
+            Text(g.title).fontWeight(.semibold)
+            Text(ByteFormat.string(g.items.reduce(0) { $0 + $1.size })).monospacedDigit().foregroundStyle(.secondary)
+            Spacer()
+            if let note = g.note { Text(note).font(.caption).foregroundStyle(.secondary) }
         }
+        .font(.callout)
     }
 }
 
@@ -348,3 +372,14 @@ struct MatchBadge: View {
         }
     }
 }
+
+#if DEBUG
+#Preview("Uninstaller · detail only") {
+    let m = PreviewData.uninstallModel()
+    return AppDetail(app: m.chosenApp!).previewEnvironment(m, width: 520)
+}
+
+#Preview("Uninstaller") {
+    UninstallerView().previewEnvironment(PreviewData.uninstallModel(), width: 760)
+}
+#endif

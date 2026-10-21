@@ -47,7 +47,7 @@ struct DiskMapView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            header
+            header.probe("page header")
             if let current = store.current {
                 breadcrumb
                 TreemapView(node: current, hovered: $hovered) { store.open($0) }
@@ -69,8 +69,10 @@ struct DiskMapView: View {
                 } actions: {
                     Button("Map my home folder") { Task { await store.map() } }.buttonStyle(.glassProminent).controlSize(.large)
                 }
+                .frame(maxHeight: .infinity)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     private var header: some View {
@@ -99,9 +101,9 @@ struct DiskMapView: View {
                 .buttonStyle(.glass).disabled(store.isMapping)
             }
         }
-        .padding(22)
-        .glassCard(cornerRadius: 24)
-        .padding([.horizontal, .top], 16)
+        .padding(.horizontal, 24)
+        .padding(.top, 20)
+        .padding(.bottom, 12)
     }
 
     private var breadcrumb: some View {
@@ -156,7 +158,7 @@ struct DiskMapView: View {
                 .buttonStyle(.glass)
         }
         .padding(14)
-        .glassCard(cornerRadius: 18)
+        .card(cornerRadius: 12)
     }
 
     /// Points at the screen that can actually clean this part of the disk.
@@ -252,3 +254,10 @@ private struct Tile: View {
             .animation(.ui, value: isHovered)
     }
 }
+
+#if DEBUG
+#Preview("Disk map") {
+    let m = PreviewData.diskMapModel()
+    return DiskMapView(store: m.diskMap).previewEnvironment(m)
+}
+#endif

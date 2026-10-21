@@ -11,6 +11,11 @@ final class AppModel: ObservableObject {
     let ledger = TrashLedger()
     lazy var history = HistoryStore(ledger: ledger, policy: policy, log: log)
     lazy var explainer = ItemExplainer(home: policy.home)
+    let ai = AIAssistant()
+
+    /// One or two sentences from the on-device model after a Cleaner scan, when available.
+    @Published var scanSummary: String?
+    @Published var isSummarizing = false
 
     lazy var leftoversStore = makeStore("Leftovers", prepare: { OrphanFinder.prepareForRemoval($0) }) { [policy] in
         let running = NSWorkspace.shared.runningApplications.compactMap(\.bundleIdentifier)
@@ -141,7 +146,20 @@ final class AppModel: ObservableObject {
         refreshDisk()
         requestNotificationPermission()
         timer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
-            Task { @MainActor in self?.autoCleanIfDue() }
+            Task { @MainActor in self?.tick() }
+        }
+        Task { await refreshQuickEstimate() }
+    }
+
+    private var ticks = 0
+
+    /// Every 30 s: run a due auto clean; every 5 min: refresh the menu bar's "ready to clean" figure.
+    private func tick() {
+        autoCleanIfDue()
+        ticks += 1
+        if ticks % 10 == 0 {
+            refreshDisk()
+            Task { await refreshQuickEstimate() }
         }
     }
 
@@ -189,12 +207,26 @@ final class AppModel: ObservableObject {
         findings = []
         selected = []
         scannedCategories = []
+        scanSummary = nil
         for category in CleanCategory.allCases where enabledCategories.contains(category) {
             await scanOne(category)
         }
         scanningCategory = nil
         hasScanned = true
         isScanning = false
+        await summarizeScan()
+    }
+
+    /// Asks the on-device model for a plain summary of the scan. Silently skipped when unavailable.
+    func summarizeScan() async {
+        guard ai.isUsable, !findings.isEmpty else { return }
+        isSummarizing = true
+        let groups = CleanCategory.allCases.map { (name: $0.title, count: findings(in: $0).count, bytes: bytes(in: $0)) }
+        let biggest = findings.sorted { $0.size > $1.size }.prefix(5)
+            .map { (title: explanations[$0.id]?.title ?? $0.displayName, bytes: $0.size) }
+        let facts = AIFacts.scan(groups: groups, biggest: Array(biggest), selectedBytes: selectedBytes)
+        scanSummary = await ai.summarize(facts)
+        isSummarizing = false
     }
 
     func scanOne(_ category: CleanCategory) async {
@@ -244,6 +276,7 @@ final class AppModel: ObservableObject {
         justFreed = outcome.bytesFreed
         refreshDisk()
         isCleaning = false
+        await refreshQuickEstimate()
     }
 
     /// Scheduled and menu-bar cleaning: only auto-safe categories, no preview.

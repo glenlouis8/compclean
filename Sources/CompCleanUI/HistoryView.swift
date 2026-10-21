@@ -10,7 +10,7 @@ struct HistoryView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            header
+            header.probe("page header")
             if history.sessions.isEmpty {
                 ContentUnavailableView("Nothing removed yet", systemImage: "clock.arrow.circlepath",
                                        description: Text("Every time CompClean moves something to the Trash, it's listed here so you can put it back."))
@@ -23,6 +23,7 @@ struct HistoryView: View {
                 .scrollContentBackground(.hidden)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .onAppear { history.refresh() }
     }
 
@@ -40,9 +41,9 @@ struct HistoryView: View {
             Button("Action log") { NSWorkspace.shared.activateFileViewerSelecting([model.log.url]) }
                 .buttonStyle(.glass)
         }
-        .padding(22)
-        .glassCard(cornerRadius: 24)
-        .padding(16)
+        .padding(.horizontal, 24)
+        .padding(.top, 20)
+        .padding(.bottom, 12)
     }
 
     private func sessionHeader(_ s: LedgerSession) -> some View {
