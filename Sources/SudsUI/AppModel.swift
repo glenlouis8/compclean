@@ -123,6 +123,8 @@ final class AppModel: ObservableObject {
     @Published var leftoverSelection: Set<String> = []
     @Published var isFindingLeftovers = false
     @Published var uninstallMessage: String?
+    /// True while an uninstall runs, so a second click can't start another (and a second password box).
+    @Published var isUninstalling = false
     @Published var justUninstalled: UninstallSummary?
 
     // Settings
@@ -381,10 +383,20 @@ final class AppModel: ObservableObject {
 
     var selectedLeftovers: [Leftover] { leftovers.filter { leftoverSelection.contains($0.id) } }
 
+    /// True when macOS will ask for a password: a System Library item, or anything in a folder
+    /// this account can't change (like an app installed for all users).
+    var uninstallNeedsPassword: Bool {
+        selectedLeftovers.contains {
+            $0.needsAdmin || !FileManager.default.isWritableFile(atPath: $0.url.deletingLastPathComponent().path)
+        }
+    }
+
     func uninstallChosen() async {
-        guard let app = chosenApp else { return }
+        guard let app = chosenApp, !isUninstalling else { return }
         let items = selectedLeftovers
         guard !items.isEmpty else { return }
+        isUninstalling = true
+        defer { isUninstalling = false }
         // Grab the icon now; once the app is in the Trash its path shows a blank icon.
         let icon = NSWorkspace.shared.icon(forFile: app.url.path)
         await quit(app)

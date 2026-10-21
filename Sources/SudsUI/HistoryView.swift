@@ -25,6 +25,17 @@ struct HistoryView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .onAppear { history.refresh() }
+        .alert("Put back needs your password",
+               isPresented: Binding(get: { history.askingPassword != nil }, set: { if !$0 { history.askingPassword = nil } })) {
+            Button("Continue") {
+                let entries = history.askingPassword ?? []
+                history.askingPassword = nil
+                Task { await history.putBack(entries) }
+            }
+            Button("Cancel", role: .cancel) { history.askingPassword = nil }
+        } message: {
+            Text(PasswordNote.text(doing: "moves these files back where they were"))
+        }
     }
 
     private var header: some View {
@@ -53,7 +64,7 @@ struct HistoryView: View {
             Spacer()
             Text("\(s.entries.count) items · \(ByteFormat.string(s.bytes))").monospacedDigit().foregroundStyle(.secondary)
             if history.canPutBack(s) {
-                Button("Put back all") { Task { await history.putBack(s.entries) } }
+                Button("Put back all") { Task { await history.requestPutBack(s.entries) } }
                     .buttonStyle(.glass).controlSize(.small)
                     .disabled(history.isWorking)
             }
@@ -109,7 +120,7 @@ struct EntryRow: View {
     private var statusView: some View {
         switch history.status(entry) {
         case .inTrash:
-            Button("Put back") { Task { await history.putBack([entry]) } }
+            Button("Put back") { Task { await history.requestPutBack([entry]) } }
                 .buttonStyle(.glass).controlSize(.small)
                 .disabled(history.isWorking)
         case .restored:

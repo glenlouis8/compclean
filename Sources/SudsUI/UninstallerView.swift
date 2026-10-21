@@ -241,7 +241,8 @@ struct AppDetail: View {
                 Task { await model.uninstallChosen() }
             }
         } message: {
-            Text("\(app.name) will be quit first. You can restore anything from the Trash.")
+            Text("\(app.name) will be quit first. You can restore anything from the Trash."
+                 + (model.uninstallNeedsPassword ? "\n\n" + PasswordNote.text() : ""))
         }
     }
 
@@ -255,10 +256,14 @@ struct AppDetail: View {
                     .font(.caption).foregroundStyle(.secondary).lineLimit(1)
             }
             Button(role: .destructive) { confirming = true } label: {
-                Label("Uninstall", systemImage: "trash").frame(minWidth: 100)
+                if model.isUninstalling {
+                    ProgressView().controlSize(.small).frame(minWidth: 100)
+                } else {
+                    Label("Uninstall", systemImage: "trash").frame(minWidth: 100)
+                }
             }
             .buttonStyle(.glassProminent).tint(.red).controlSize(.large)
-            .disabled(model.leftoverSelection.isEmpty || model.isFindingLeftovers)
+            .disabled(model.leftoverSelection.isEmpty || model.isFindingLeftovers || model.isUninstalling)
         }
         .padding(.leading, 22).padding(.trailing, 8).padding(.vertical, 8)
         .glassEffect(.regular, in: .capsule)

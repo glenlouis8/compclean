@@ -38,6 +38,18 @@ final class HistoryStore: ObservableObject {
         session.entries.contains { status($0) == .inTrash }
     }
 
+    /// Items waiting on a heads-up about the password box before they're put back.
+    @Published var askingPassword: [LedgerEntry]?
+
+    /// Put back, first explaining the password box if any of these items needs it.
+    func requestPutBack(_ entries: [LedgerEntry]) async {
+        if entries.contains(where: { $0.admin && status($0) == .inTrash }) {
+            askingPassword = entries
+        } else {
+            await putBack(entries)
+        }
+    }
+
     func putBack(_ entries: [LedgerEntry]) async {
         isWorking = true
         defer { isWorking = false }
